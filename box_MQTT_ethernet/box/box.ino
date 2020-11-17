@@ -24,7 +24,7 @@ byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xED, 0xAD };
 
 //Refresh Settings
 long lastReach;
-const int netUpdateInterval = 2000;
+const int netUpdateInterval = 3000;
 
 long lastRefresh;
 const int lightRefreshInterval = 200;
@@ -85,28 +85,40 @@ void callback (char* topic, byte* payload, unsigned int length) {
   Serial.println("recieved smth");
   if (netState) {
     payload[length] = '\0';
-    String value = String((char*)payload);
+    String message = String((char*)payload);
+
+    //Single feed for all AC channels. Mapping payloads to channels and states
+
+    //Working with topic, value, and length
+    if(strcmp(topic, "conradronk/feeds/box")==0){
+      //could split string into key-values. Yeah, kinda have to
+      //key = 
+    }
     
+    
+    //Handles the LED PWM channels
     if (strcmp(topic,"conradronk/feeds/channel_a_amplitude")==0){
-      ampAState = value.toInt();
+      ampAState = message.toInt();
     }
   
     if (strcmp(topic,"conradronk/feeds/channel_a_temperature")==0) {
       //Serial.println("Change in temp");
-      tempAState = value.toInt();
+      tempAState = message.toInt();
     }
     
+    
+    //Previous code: handles boolean vales, mapping AC channels to feeds
     if (strcmp(topic,"conradronk/feeds/ac_1_setting")==0) {
-      ac1State = value.toInt();
+      ac1State = message.toInt();
     }
     if (strcmp(topic,"conradronk/feeds/ac_2_setting")==0) {
-      ac2State = value.toInt();
+      ac2State = message.toInt();
     }
     if (strcmp(topic,"conradronk/feeds/ac_3_setting")==0) {
-      ac3State = value.toInt();
+      ac3State = message.toInt();
     }
     if (strcmp(topic,"conradronk/feeds/ac_4_setting")==0) {
-      ac4State = value.toInt();
+      ac4State = meassage.toInt();
     }
   
     //Custom shift Routines
@@ -179,6 +191,7 @@ void loop() {
   
   //Only runs if the network/lockout switch is down, and at the network frequency
   if (netState && (lastReach + netUpdateInterval) < millis()) {
+    lastReach = millis();
     reconnect();
     
     lastReach = millis();
@@ -205,13 +218,13 @@ bool reconnect() {
   Ethernet.maintain();
   if (mqttclient.connect("", AIO_USERNAME,AIO_KEY)) {
     mqttclient.subscribe("conradronk/feeds/channel_a_amplitude");
-    mqttclient.subscribe("conradronk/feeds/channel_a_temperature");
+    //mqttclient.subscribe("conradronk/feeds/channel_a_temperature");
     mqttclient.subscribe("conradronk/feeds/ac_1_setting");
     mqttclient.subscribe("conradronk/feeds/ac_2_setting");
     mqttclient.subscribe("conradronk/feeds/ac_3_setting");
     mqttclient.subscribe("conradronk/feeds/ac_4_setting");
-    mqttclient.subscribe("conradronk/feeds/sunrise_start");
-    mqttclient.subscribe("conradronk/feeds/sunset");
+    //mqttclient.subscribe("conradronk/feeds/sunrise_start");
+    //mqttclient.subscribe("conradronk/feeds/sunset");
   } else {
     Serial.println("unable to connect");
     //Serial.println(client.localIP());
@@ -411,5 +424,3 @@ int sanitizeNumber(int input) {
     //}
     //reconnect();
     //mqttclient.subscribe("conradronk/feeds/channel_a_amplitude");
-
-
