@@ -111,7 +111,21 @@ void callback (char* topic, byte* payload, unsigned int length) {
     //Working with topic, value, and length
     if(strcmp(topic, "conradronk/feeds/box")==0){
       //could split string into key-values. Yeah, kinda have to
-      //String key = splitStriing(
+      String key = splitString(message, ":", 0);
+      String value = splitString(message, ":". 1);
+
+      if (strcmp(key, "ac_1")==0){
+        ac1State = value.toInt();
+      }
+      if (strcmp(key, "ac_2")==0){
+        ac2State = value.toInt();
+      }
+      if (strcmp(key, "ac_3")==0){
+        ac3State = value.toInt();
+      }
+      if (strcmp(key, "ac_4")==0){
+        ac4State = value.toInt();
+      }
     }
     
     
